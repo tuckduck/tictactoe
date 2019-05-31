@@ -1,5 +1,8 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Random;
+import java.util.Collections;
+
 public class game {
   public static void main(String args[]){
     System.out.println("Hello welcome to Tic-Tac-Toe");
@@ -21,33 +24,39 @@ public class game {
         computer = true;
         break;
       default:
-        winner = 2;
+        winner = 3;
     }
-    String winning_message = (winner == 1)?(computer)?"You Win!":"Player X Wins!":(computer)?
-                                                                                        "You Lose!":"Player O Wins!";
+    String winning_message = (winner == 3) ? "Tie game" : (winner == 1)?(computer)?"You Win!":"Player X Wins!"
+                                                              :(computer)? "You Lose!":"Player O Wins!";
     System.out.println(winning_message);
   }
   private static int two_player_game(char[] board, Scanner player){
     print_board(board);
-    Boolean winner = false;
+    char person = 'X';
     int move;
-    while(!winner) {
-      System.out.println("Player X's turn, where do you want to go? (0-8)");
-      move = player.nextInt();
-      board[move] = 'X';
+    ArrayList<Integer> avaliable= new ArrayList<Integer>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
+    while(true) {
+      if(avaliable.isEmpty())
+        break;
+      System.out.println("Player " + person + "'s turn, where do you want to go? (0-8)");
+      while (true) {
+        move = player.nextInt();
+        if (avaliable.contains(move))
+               break;
+        System.out.println("That spot is taken, choose again");
+      }
+      avaliable.remove(Integer.valueOf(move));
+      //System.out.println(avaliable);
+      board[move] = person;
       print_board(board);
       if(win_check(board))
-        return 1;
-      System.out.println("Player O's turn, where do you want to go? (0-8)");
-      move = player.nextInt();
-      board[move] = 'O';
-      winner = win_check(board);
-      print_board(board);
+        return (person == 'X') ? 1 : 2;
+      person = (person == 'X') ? 'O' : 'X';
     }
-    return 2;
-
+    return 3;
   }
   private static int easy_Computer(char[] board, Scanner player) {
+    ArrayList<Integer> avaliable= new ArrayList<Integer>(java.util.Arrays.asList(1,2,3,4,5,6,7,8,9));
     Random randy = new Random();
     print_board(board);
     Boolean winner = false;
