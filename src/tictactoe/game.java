@@ -1,4 +1,6 @@
+package tictactoe;
 import java.util.*;
+
 
 public class game {
   public static void main(String args[]){
@@ -25,6 +27,7 @@ public class game {
     System.out.println(winning_message);
   }
   private static int two_player_game(char[] board, Scanner player){
+    board_analysis referee = new board_analysis();
     print_board(board);
     char person = 'X';
     int move;
@@ -33,8 +36,9 @@ public class game {
       move = get_player_move(available, person, player);
       available.remove(Integer.valueOf(move));
       board[move] = person;
+      referee.incoming_move(move, person);
       print_board(board);
-      if(win_check(board))
+      if(referee.check_win())
         return (person == 'X') ? 1 : 2;
       person = (person == 'X') ? 'O' : 'X';
     }
@@ -67,57 +71,37 @@ public class game {
 
   private static int easy_Computer(char[] board, Scanner player) {
     ArrayList<Integer> available= new ArrayList<>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
+    board_analysis referee = new board_analysis();
     Random randy = new Random();
     print_board(board);
     int move;
     while(!available.isEmpty()) {
       move = get_player_move(available, 'X', player);
       available.remove(Integer.valueOf(move));
+      referee.incoming_move(move, 'X');
       board[move] = 'X';
       print_board(board);
-      if(win_check(board))
+      if(referee.check_win())
         return 1;
-      rand_Computer_move(board, randy,available);
-      print_board(board);
-      if(win_check(board))
+      rand_Computer_move(board, randy,available,referee);
+            print_board(board);
+      if(referee.check_win())
         return 2;
     }
     return 3;
 
   }
-  private static void rand_Computer_move(char[] board, Random randy, ArrayList<Integer> available) {
+  private static void rand_Computer_move(char[] board, Random randy, ArrayList<Integer> available,board_analysis referee) {
     int randy_int = -1;
     for(int i = 0; i < 10; i++) {
       randy_int = randy.nextInt(9);
       if (available.contains(randy_int))
         break;
     }
+    available.remove(Integer.valueOf(randy_int));
     board[randy_int] = 'O';
+    referee.incoming_move(randy_int, 'O');
     System.out.println("The computer chose spot " + randy_int);
-  }
-  private static boolean win_check(char[] board){
-    for(int i=0; i<=6; i+=3) {
-      if(board[i] == ' ')
-        continue;
-      if (board[i] == board[i+1]) {
-        if (board[i] == board[i + 2]) {
-          return true;
-        }
-      }
-    }
-    for(int i=0;i<3;i++){
-      if(board[i] == ' ')
-        continue;
-      if(board[i] == board[i+3]){
-        if(board[i] == board[i+6]){
-          return true;
-        }
-      }
-    }
-    if(board[4] != ' ') {
-      return ((board[0] == board[4]) && (board[0] == board[8]) || ((board[2] == board[4]) && (board[2] == board[6])));
-    }
-    return false;
   }
   private static void print_board(char[] board){
     for(int i=0; i<=6; i+=3){
