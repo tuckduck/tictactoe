@@ -6,7 +6,7 @@ public class game {
     char[] ref_board = {'0','1','2','3','4','5','6','7','8'};
     Scanner player = new Scanner(System.in);
     System.out.println("What game do you want to play? 1 - human vs. human  |  2 - human vs. easy computer");
-    int gamemode = player.nextInt();
+    int gamemode = get_player_int(player);
     int winner;
     boolean computer = false;
     switch(gamemode) {
@@ -28,7 +28,7 @@ public class game {
     print_board(board);
     char person = 'X';
     int move;
-    ArrayList<Integer> available= new ArrayList<Integer>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
+    ArrayList<Integer> available= new ArrayList<>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
     while(!available.isEmpty()) {
       move = get_player_move(available, person, player);
       available.remove(Integer.valueOf(move));
@@ -66,30 +66,34 @@ public class game {
   }
 
   private static int easy_Computer(char[] board, Scanner player) {
-    ArrayList<Integer> available= new ArrayList<Integer>(java.util.Arrays.asList(1,2,3,4,5,6,7,8,9));
+    ArrayList<Integer> available= new ArrayList<>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
     Random randy = new Random();
     print_board(board);
-    Boolean winner = false;
     int move;
-    while(!winner) {
-      System.out.println("Player X's turn, where do you want to go? (0-8)");
-      move = player.nextInt();
+    while(!available.isEmpty()) {
+      move = get_player_move(available, 'X', player);
+      available.remove(Integer.valueOf(move));
       board[move] = 'X';
       print_board(board);
-      if (win_check(board))
+      if(win_check(board))
         return 1;
-      rand_Computer_move(board, randy);
-      winner =  win_check(board);
+      rand_Computer_move(board, randy,available);
       print_board(board);
+      if(win_check(board))
+        return 2;
     }
-    return 2;
+    return 3;
 
   }
-  private static char[] rand_Computer_move(char[] board, Random randy) {
-    int randy_int = randy.nextInt(9);
+  private static void rand_Computer_move(char[] board, Random randy, ArrayList<Integer> available) {
+    int randy_int = -1;
+    for(int i = 0; i < 10; i++) {
+      randy_int = randy.nextInt(9);
+      if (available.contains(randy_int))
+        break;
+    }
     board[randy_int] = 'O';
     System.out.println("The computer chose spot " + randy_int);
-    return board;
   }
   private static boolean win_check(char[] board){
     for(int i=0; i<=6; i+=3) {
@@ -111,10 +115,7 @@ public class game {
       }
     }
     if(board[4] != ' ') {
-      if ((board[0] == board[4]) && (board[0] == board[8]))
-        return true;
-      if ((board[2] == board[4]) && (board[2] == board[6]))
-        return true;
+      return ((board[0] == board[4]) && (board[0] == board[8]) || ((board[2] == board[4]) && (board[2] == board[6])));
     }
     return false;
   }
