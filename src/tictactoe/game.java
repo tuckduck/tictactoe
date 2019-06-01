@@ -1,7 +1,6 @@
 package tictactoe;
 import java.util.*;
 
-
 public class game {
   public static void main(String args[]){
     System.out.println("Hello welcome to Tic-Tac-Toe");
