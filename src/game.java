@@ -1,15 +1,9 @@
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.Random;
-import java.util.Collections;
+import java.util.*;
 
 public class game {
   public static void main(String args[]){
     System.out.println("Hello welcome to Tic-Tac-Toe");
-    //System.out.println("Here are the board position numbers: \n");
     char[] ref_board = {'0','1','2','3','4','5','6','7','8'};
-    //print_board(ref_board);
-    //char[] game_board = {' ',' ',' ',' ',' ',' ',' ',' ',' '};
     Scanner player = new Scanner(System.in);
     System.out.println("What game do you want to play? 1 - human vs. human  |  2 - human vs. easy computer");
     int gamemode = player.nextInt();
@@ -34,19 +28,10 @@ public class game {
     print_board(board);
     char person = 'X';
     int move;
-    ArrayList<Integer> avaliable= new ArrayList<Integer>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
-    while(true) {
-      if(avaliable.isEmpty())
-        break;
-      System.out.println("Player " + person + "'s turn, where do you want to go? (0-8)");
-      while (true) {
-        move = player.nextInt();
-        if (avaliable.contains(move))
-               break;
-        System.out.println("That spot is taken, choose again");
-      }
-      avaliable.remove(Integer.valueOf(move));
-      //System.out.println(avaliable);
+    ArrayList<Integer> available= new ArrayList<Integer>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
+    while(!available.isEmpty()) {
+      move = get_player_move(available, person, player);
+      available.remove(Integer.valueOf(move));
       board[move] = person;
       print_board(board);
       if(win_check(board))
@@ -55,8 +40,33 @@ public class game {
     }
     return 3;
   }
+  private static int get_player_move(ArrayList<Integer> available, char person, Scanner player) {
+    int move;
+    while (true) {
+      System.out.println("Player " + person + "'s turn, where do you want to go? (0-8)");
+      move = get_player_int(player);
+      if (available.contains(move))
+        break;
+      System.out.println("That spot is taken, choose again");
+    }
+    return move;
+  }
+  private static int get_player_int(Scanner player) {
+    int move;
+      while (true) {
+          try {
+            move = player.nextInt();
+            break;
+          } catch (InputMismatchException e) {
+            System.out.println("Invalid input, must be an integer");
+            player.nextLine();
+          }
+        }
+    return move;
+  }
+
   private static int easy_Computer(char[] board, Scanner player) {
-    ArrayList<Integer> avaliable= new ArrayList<Integer>(java.util.Arrays.asList(1,2,3,4,5,6,7,8,9));
+    ArrayList<Integer> available= new ArrayList<Integer>(java.util.Arrays.asList(1,2,3,4,5,6,7,8,9));
     Random randy = new Random();
     print_board(board);
     Boolean winner = false;
