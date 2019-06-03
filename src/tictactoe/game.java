@@ -39,10 +39,10 @@ public class game {
     print_board(board);
     char person = 'X';
     int move;
-    ArrayList<Integer> available= new ArrayList<>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
+    HashSet<Integer> available= new HashSet<>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
     while(!available.isEmpty()) {
       move = get_player_move(available, person, player);
-      available.remove(Integer.valueOf(move));
+      available.remove(move);
       board[move] = person;
       referee.incoming_move(move, person);
       print_board(board);
@@ -52,7 +52,7 @@ public class game {
     }
     return 3;
   }
-  private static int get_player_move(ArrayList<Integer> available, char person, Scanner player) {
+  private static int get_player_move(HashSet<Integer> available, char person, Scanner player) {
     int move;
     while (true) {
       System.out.println("Player " + person + "'s turn, where do you want to go? (0-8)");
@@ -78,14 +78,14 @@ public class game {
   }
 
   private static int easy_Computer(char[] board, Scanner player) {
-    ArrayList<Integer> available= new ArrayList<>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
+    HashSet<Integer> available= new HashSet<>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
     board_analysis referee = new board_analysis();
     Random randy = new Random();
     print_board(board);
     int move;
     while(!available.isEmpty()) {
       move = get_player_move(available, 'X', player);
-      available.remove(Integer.valueOf(move));
+      available.remove(move);
       referee.incoming_move(move, 'X');
       board[move] = 'X';
       print_board(board);
@@ -99,14 +99,14 @@ public class game {
     return 3;
   }
   private static int medium_Computer(char[] board, Scanner player) {
-    ArrayList<Integer> available= new ArrayList<>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
+    HashSet<Integer> available= new HashSet<>(java.util.Arrays.asList(0,1,2,3,4,5,6,7,8));
     board_analysis referee = new board_analysis();
     Random randy = new Random();
     print_board(board);
     int move;
     while(!available.isEmpty()) {
       move = get_player_move(available, 'X', player);
-      available.remove(Integer.valueOf(move));
+      available.remove(move);
       referee.incoming_move(move, 'X');
       board[move] = 'X';
       print_board(board);
@@ -120,16 +120,16 @@ public class game {
     }
     return 3;
   }
-  private static boolean win_or_block(char[] board, board_analysis referee, ArrayList<Integer> available) {
-    HashSet<Integer> possibilities = referee.get_priority_ones('O');
+  private static boolean win_or_block(char[] board, board_analysis referee, HashSet<Integer> available) {
+    int[] possibilities = referee.get_priority_ones('O');
     int move;
-    for(Integer possibility:possibilities) {
+    for(int possibility:possibilities) {
       if(available.contains(possibility)){
         move = possibility;
         board[move] = 'O';
         referee.incoming_move(move, 'O');
         System.out.println("The computer chose spot " + move);
-        available.remove(Integer.valueOf(move));
+        available.remove(move);
         return true;
       }
     }
@@ -140,20 +140,20 @@ public class game {
         board[move] = 'O';
         referee.incoming_move(move, 'O');
         System.out.println("The computer chose spot " + move);
-        available.remove(Integer.valueOf(move));
+        available.remove(move);
         return true;
       }
     }
     return false;
   }
-  private static void rand_Computer_move(char[] board, Random randy, ArrayList<Integer> available,board_analysis referee) {
+  private static void rand_Computer_move(char[] board, Random randy, HashSet<Integer> available,board_analysis referee) {
     int randy_int = -1;
     for(int i = 0; i < 10; i++) {
       randy_int = randy.nextInt(9);
       if (available.contains(randy_int))
         break;
     }
-    available.remove(Integer.valueOf(randy_int));
+    available.remove(randy_int);
     board[randy_int] = 'O';
     referee.incoming_move(randy_int, 'O');
     System.out.println("The computer chose spot " + randy_int);

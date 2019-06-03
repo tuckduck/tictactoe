@@ -3,113 +3,51 @@ package tictactoe;
 import java.util.HashSet;
 
 class board_analysis {
-  private int[] win_vector_player1;
-  private int[] win_vector_player2;
+  private int[][] move_to_vector;
+  private int[][] win_vectors;
+  private int[] win_vector_counts_player1;
+  private int[] win_vector_counts_player2;
+  private HashSet<Integer> player1_moves;
+  private HashSet<Integer> player2_moves;
   board_analysis(){
-    this.win_vector_player1 = new int[8];
-    this.win_vector_player2 = new int[8];
+    this.move_to_vector = new int[][]{{0,3,6},{0,4},{0,5,7},{1,3},{1,4,6,7},{1,5},{2,3,7},{2,4},{2,5,6}};
+    this.win_vectors = new int[][]{{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};
+
+    this.win_vector_counts_player1 = new int[8];
+    this.win_vector_counts_player2 = new int[8];
+
+    this.player1_moves = new HashSet<>();
+    this.player2_moves = new HashSet<>();
   }
   boolean check_win() {
     for(int i =0;i < 8; i++) {
-      if (win_vector_player1[i] == 3 || win_vector_player2[i] == 3) {
+      if (win_vector_counts_player1[i] == 3 || win_vector_counts_player2[i] == 3) {
         return true;
       }
     }
     return false;
   }
-  HashSet<Integer> get_priority_ones(char identifier){
-    HashSet<Integer> priorities = new HashSet<>();
-    int[] vector = (identifier == 'X') ? this.win_vector_player1: this.win_vector_player2;
-    if(vector[0] == 2){
-      priorities.add(0);
-      priorities.add(1);
-      priorities.add(2);
+  int[] get_priority_ones(char identifier){
+    int[] vector_counts = (identifier == 'X') ? this.win_vector_counts_player1 : this.win_vector_counts_player2;
+    for(int i = 0; i < 8; i++) {
+      if(vector_counts[i] == 2)
+        return this.win_vectors[i];
     }
-    if(vector[1] == 2){
-      priorities.add(3);
-      priorities.add(4);
-      priorities.add(5);
+    vector_counts = (identifier == 'X') ? this.win_vector_counts_player2 : this.win_vector_counts_player1;
+    for(int i = 0; i < 8; i++) {
+      if(vector_counts[i] == 2)
+        return this.win_vectors[i];
     }
-    if(vector[2] == 2){
-      priorities.add(6);
-      priorities.add(7);
-      priorities.add(8);
-    }
-    if(vector[3] == 2){
-      priorities.add(0);
-      priorities.add(3);
-      priorities.add(6);
-    }
-    if(vector[4] == 2){
-      priorities.add(1);
-      priorities.add(4);
-      priorities.add(7);
-    }
-    if(vector[5] == 2){
-      priorities.add(2);
-      priorities.add(5);
-      priorities.add(8);
-    }
-    if(vector[6] == 2){
-      priorities.add(0);
-      priorities.add(4);
-      priorities.add(8);
-    }
-    if(vector[7] == 2){
-      priorities.add(2);
-      priorities.add(4);
-      priorities.add(6);
-    }
-    return priorities;
+    return new int[]{};
   }
   void incoming_move(int move, char person) {
-    int[] vector = (person =='X') ? this.win_vector_player1 : this.win_vector_player2;
-    switch(move){
-      case 0:
-        vector[0] += 1;
-        vector[3] += 1;
-        vector[6] += 1;
-        break;
-      case 1:
-        vector[0] += 1;
-        vector[4] += 1;
-        break;
-      case 2:
-        vector[0] += 1;
-        vector[5] += 1;
-        vector[7] += 1;
-        break;
-      case 3:
-        vector[1] += 1;
-        vector[3] += 1;
-        break;
-      case 4:
-        vector[1] += 1;
-        vector[4] += 1;
-        vector[6] += 1;
-        vector[7] += 1;
-        break;
-      case 5:
-        vector[1] += 1;
-        vector[5] += 1;
-        break;
-      case 6:
-        vector[2] += 1;
-        vector[3] += 1;
-        vector[7] += 1;
-        break;
-      case 7:
-        vector[2] += 1;
-        vector[4] += 1;
-        break;
-      case 8:
-        vector[2] += 1;
-        vector[5] += 1;
-        vector[6] += 1;
-        break;
-      default:
-        throw new IllegalArgumentException("Invalid move attempted");
-
+    if(person == 'X')
+      this.player1_moves.add(move);
+    else
+      this.player2_moves.add(move);
+    int[] vector = (person == 'X') ? this.win_vector_counts_player1 : this.win_vector_counts_player2;
+    for(int entry:this.move_to_vector[move]){
+      vector[entry]+=1;
     }
   }
 }
