@@ -8,4 +8,7 @@ Method for each gamemode runs the game loop, creating a board_analysis object wh
 to check for wins and determine AI moves. Specific actions are seperated into methods, to keep the game loops readable.
 
 board_analysis Class handles the win-condition checking and determines AI moves. incoming_move method operates upon member
-variables to reflect a particular move made by a player. These member variables allow for quick win-checking and AI moves.
+variables to reflect a particular move made by a player. These member variables allow for quick win-checking and AI moves. Minimal iteration/recursion is used to avoid messey code and optimize performance. 
+
+Strategy Credits to Kevin Crowley Robert S. Siegler in their paper on "Flexible Strategy Use in Young Children's Tic-Tac-Toe" 
+PDF pg. 6, Original Publication pg. 536 - https://onlinelibrary.wiley.com/doi/abs/10.1207/s15516709cog1704_3
