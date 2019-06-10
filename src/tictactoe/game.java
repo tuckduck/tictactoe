@@ -9,7 +9,7 @@ public class game {
     do {
       char[] ref_board = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
       System.out.println(
-          "What game do you want to play? 1 - human vs. human  |  2 - human vs. easy computer  |  3 - human vs. medium computer  |  4 - human vs. hard computer");
+          "What game do you want to play? 1 - human vs. human  |  2 - human vs. easy computer  |  3 - human vs. medium computer  |  4 - human vs. unbeatable computer");
       int winner;
       boolean computer = false;
       switch (get_player_int(player)) {
@@ -125,6 +125,7 @@ public class game {
     board_analysis referee = new board_analysis();
     Random randy = new Random();
     print_board(board);
+    int corner = -1;
     while(!available.isEmpty()) {
       player_move(available, 'X', player, board, referee);
       if(referee.check_win())
@@ -133,8 +134,13 @@ public class game {
         if(!create_or_block_fork(board, referee, available))
           if(available.contains(4))
             process_computer_move(4, available, board, referee);
-          else
-            rand_Computer_move(board, randy,available,referee);
+          else {
+            corner = referee.play_corners(available);
+            if (corner != -1) {
+              process_computer_move(corner, available, board, referee);
+            } else
+              rand_Computer_move(board, randy, available, referee);
+          }
       print_board(board);
       if(referee.check_win())
         return 2;
@@ -142,8 +148,8 @@ public class game {
     return 3;
   }
   private static boolean create_or_block_fork(char [] board, board_analysis referee, HashSet<Integer> available){
-    for(int choice:available){
-      if(referee.theoretical_fork(choice, false)){
+    for(int choice:available) {
+      if (referee.theoretical_fork(choice, false)) {
         board[choice] = 'O';
         referee.incoming_move(choice, 'O');
         System.out.println("The computer chose spot " + choice);
@@ -151,14 +157,29 @@ public class game {
         return true;
       }
     }
+    //bit of spaghetti code, if no fork is available for the computer, it needs to ensure player cannot create two forks
+    //but if the player can only create one fork, block it.
+    ArrayList<Integer> blocks = new ArrayList<>();
     for(int choice:available){
       if(referee.theoretical_fork(choice, true)){
-        board[choice] = 'O';
-        referee.incoming_move(choice, 'O');
-        System.out.println("The computer chose spot " + choice);
-        available.remove(choice);
-        return true;
+        blocks.add(choice);
       }
+    }
+    if(blocks.size() == 2) {
+      blocks.add(-1);
+      for(int choice:available) {
+        referee.theoretical_move(choice);
+        if(!blocks.contains(referee.get_priority_ones('O', available))) {
+          referee.destroy_theoretical_move(choice);
+          process_computer_move(choice, available, board, referee);
+          return true;
+        }
+        referee.destroy_theoretical_move(choice);
+      }
+    }
+    if (blocks.size() == 1){
+      process_computer_move(blocks.get(0), available, board, referee);
+      return true;
     }
     return false;
   }
